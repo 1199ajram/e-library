@@ -42,6 +42,13 @@ public class MemberService {
         return mapToResponse(memberRepository.save(member));
     }
 
+    public List<MemberResponse> getAllMember() {
+        List<Member> members = memberRepository.findAll();
+        return members.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
     public Page<MemberResponse> getAllMembers(int page, int size, String sortBy, String sortDir, String search) {
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()

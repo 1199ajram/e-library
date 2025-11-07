@@ -46,23 +46,33 @@ public class ReservationService {
         return reservationRepository.save(reservation);
     }
 
-    public Page<Reservation> getAllReservationByStatus(int page, int size, String sortBy, String sortDir, String search,Reservation.ReservationStatus status) {
-        // Create sort object
+    public Page<Reservation> getAllReservationByStatus(
+            int page, int size, String sortBy, String sortDir,
+            String search, Reservation.ReservationStatus status) {
+
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
-        // Create pageable object
         Pageable pageable = PageRequest.of(page, size, sort);
 
-        // If search term is provided, use search query
+        // ✅ Case 1: If a search term is provided
         if (search != null && !search.trim().isEmpty()) {
-            return reservationRepository.searchReservation(search, status, pageable);
+            if (status != null) {
+                return reservationRepository.searchReservation(search, status, pageable);
+            } else {
+                return reservationRepository.searchReservationWithoutStatus(search, pageable);
+            }
         }
 
-        // Otherwise, return all authors
-        return reservationRepository.findAllByStatus(status,pageable);
+        // ✅ Case 2: No search term
+        if (status != null) {
+            return reservationRepository.findAllByStatus(status, pageable);
+        } else {
+            return reservationRepository.findAll(pageable);
+        }
     }
+
 
 
     public List<Reservation> getReservationsByMember(UUID memberId) {

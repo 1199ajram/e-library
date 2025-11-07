@@ -35,6 +35,18 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
             Pageable pageable
     );
 
+    @Query("""
+    SELECT a FROM Reservation a
+    WHERE 
+        LOWER(a.book.title) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+        OR LOWER(CONCAT(a.book.publisher.firstname, ' ', a.book.publisher.lastname)) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+        OR LOWER(CONCAT(a.member.firstname, ' ', a.member.lastname)) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+        OR CAST(a.reservationDate AS string) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+        OR CAST(a.expiryDate AS string) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+""")
+    Page<Reservation> searchReservationWithoutStatus(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+
     // Get all with pagination (already available from JpaRepository)
     Page<Reservation> findAllByStatus(Reservation.ReservationStatus status, Pageable pageable);
 

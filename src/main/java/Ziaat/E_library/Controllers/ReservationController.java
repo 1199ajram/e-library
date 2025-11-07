@@ -57,8 +57,8 @@ public class ReservationController {
             @Parameter(description = "Search term to filter authors by name", example = "John")
             @RequestParam(required = false) String search,
 
-            @Parameter(description = "Search ", example = "")
-            @RequestParam(required = true) Reservation.ReservationStatus status
+            @Parameter(description = "Reservation status filter (optional)", example = "PENDING")
+            @RequestParam(required = false) Reservation.ReservationStatus status
 
     ) {
         Page<Reservation> reservationPage = reservationService.getAllReservationByStatus(page, size, sortBy, sortDir, search,status);

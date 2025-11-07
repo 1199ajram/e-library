@@ -2,6 +2,7 @@ package Ziaat.E_library.Services;
 
 import Ziaat.E_library.Dto.BookRequest;
 import Ziaat.E_library.Dto.BookResponse;
+import Ziaat.E_library.Dto.MemberResponse;
 import Ziaat.E_library.Exception.BookNotFoundException;
 import Ziaat.E_library.Model.*;
 import Ziaat.E_library.Repository.*;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -85,6 +87,14 @@ public class BooksService {
 
         return booksRepository.findAll(pageable);
     }
+
+    public List<BookResponse> getAll() {
+        List<Books> members = booksRepository.findAll();
+        return members.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
 
     private void mapRequestToEntity(Books book, BookRequest request) {
         book.setTitle(request.getTitle());

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -41,6 +42,15 @@ public class MemberController {
         Page<MemberResponse> members = memberService.getAllMembers(page, size, sortBy, sortDir, search);
         return ResponseEntity.ok(members);
     }
+
+    @Operation(summary = "Get all members")
+    @GetMapping("/all")
+    public ResponseEntity<List<MemberResponse>> getAll(
+          ) {
+        List<MemberResponse> members = memberService.getAllMember();
+        return ResponseEntity.ok(members);
+    }
+
 
     @Operation(summary = "Get member by ID")
     @GetMapping("/{id}")

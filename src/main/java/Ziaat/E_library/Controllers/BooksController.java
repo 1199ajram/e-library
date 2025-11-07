@@ -2,6 +2,7 @@ package Ziaat.E_library.Controllers;
 
 import Ziaat.E_library.Dto.BookRequest;
 import Ziaat.E_library.Dto.BookResponse;
+import Ziaat.E_library.Dto.MemberResponse;
 import Ziaat.E_library.Model.Books;
 import Ziaat.E_library.Services.BooksService;
 import Ziaat.E_library.Utils.PageResponse;
@@ -19,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -86,6 +88,15 @@ public class BooksController {
         response.setHasPrevious(BooksPage.hasPrevious());
 
         return ResponseEntity.ok(response);
+    }
+
+
+    @Operation(summary = "Get all book")
+    @GetMapping("/all")
+    public ResponseEntity<List<BookResponse>> getAll(
+    ) {
+        List<BookResponse> books = BooksService.getAll();
+        return ResponseEntity.ok(books);
     }
 
     @Operation(
