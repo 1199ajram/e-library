@@ -1,0 +1,237 @@
+package Ziaat.E_library.Services;
+
+import Ziaat.E_library.Dto.BookRequest;
+import Ziaat.E_library.Dto.BookResponse;
+import Ziaat.E_library.Exception.BookNotFoundException;
+import Ziaat.E_library.Model.*;
+import Ziaat.E_library.Repository.*;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.*;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+@Transactional
+public class BooksService {
+
+    @Autowired
+    private BookRepository booksRepository;
+
+    @Autowired
+    private PublisherRepository publisherRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private BookCopyRepository bookCopyRepository;
+
+    @Autowired
+    private MinioService minioService;
+
+
+    @Autowired
+    private AuthorRepository authorRepository;
+
+    @Value("${minio.bucket.cover}")
+    private String coverBucket;
+
+    @Value("${minio.bucket.attachment}")
+    private String attachmentBucket;
+
+
+    public BookResponse createBook(BookRequest request) {
+        Books book = new Books();
+        mapRequestToEntity(book, request);
+        return mapToResponse(booksRepository.save(book));
+    }
+
+
+    public BookResponse updateBook(UUID id, BookRequest request) {
+        Books book = booksRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException(String.valueOf(id)));
+
+        mapRequestToEntity(book, request);
+        return mapToResponse(booksRepository.save(book));
+    }
+
+
+    public void deleteBook(UUID id) {
+        booksRepository.deleteById(id);
+    }
+
+    public Books getBookById(UUID id) {
+        return booksRepository.findById(id)
+                .orElseThrow(() -> new BookNotFoundException(String.valueOf(id)));
+    }
+
+    public Page<Books> getAllBooks(int page, int size, String sortBy, String sortDir, String search) {
+        Sort sort = sortDir.equalsIgnoreCase("asc")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        if (search != null && !search.trim().isEmpty()) {
+            return booksRepository.searchBooks(search, pageable);
+        }
+
+        return booksRepository.findAll(pageable);
+    }
+
+    private void mapRequestToEntity(Books book, BookRequest request) {
+        book.setTitle(request.getTitle());
+        book.setIsbn(request.getIsbn());
+        book.setDescription(request.getDescription());
+        book.setLanguage(request.getLanguage());
+        book.setPageCount(request.getPageCount());
+
+        // Handle cover image upload from base64
+        if (request.getCoverImageUrl() != null && !request.getCoverImageUrl().isEmpty()) {
+            System.out.println("Processing cover image: " + request.getCoverImageName());
+            try {
+                String coverUrl = minioService.uploadFileFromBase64(
+                        request.getCoverImageUrl(),
+                        request.getCoverImageName(),
+                        "image/png",
+                        coverBucket
+                );
+                book.setCoverImageUrl(coverUrl);
+                System.out.println("Cover image uploaded successfully: " + coverUrl);
+            } catch (Exception e) {
+                System.err.println("Error uploading cover image: " + e.getMessage());
+                e.printStackTrace();
+                throw new RuntimeException("Failed to upload cover image", e);
+            }
+        }
+
+        // Handle attachment upload from base64
+        if (request.getAttachmentUrl() != null && !request.getAttachmentUrl().isEmpty()) {
+            System.out.println("Processing attachment: " + request.getAttachmentName());
+            try {
+                String attachmentUrl = minioService.uploadFileFromBase64(
+                        request.getAttachmentUrl(),
+                        request.getAttachmentName(),
+                        "application/pdf",
+                        attachmentBucket
+                );
+                book.setAttachmentUrl(attachmentUrl);
+                System.out.println("Attachment uploaded successfully: " + attachmentUrl);
+            } catch (Exception e) {
+                System.err.println("Error uploading attachment: " + e.getMessage());
+                e.printStackTrace();
+                throw new RuntimeException("Failed to upload attachment", e);
+            }
+        }
+
+        // Convert publishDate string to LocalDate
+        if (request.getPublishedDate() != null) {
+            book.setPublishedDate(LocalDate.parse(request.getPublishedDate()));
+        }
+
+        // Publisher
+        if (request.getPublisher() != null && request.getPublisher().getPublisherId() != null) {
+            UUID publisherId = UUID.fromString(request.getPublisher().getPublisherId());
+            Publisher publisher = publisherRepository.findById(publisherId)
+                    .orElseThrow(() -> new RuntimeException("Publisher not found"));
+            book.setPublisher(publisher);
+        }
+
+        // Category
+        if (request.getCategory() != null && request.getCategory().getCategoryId() != null) {
+            UUID categoryId = UUID.fromString(request.getCategory().getCategoryId());
+            Category category = categoryRepository.findById(categoryId)
+                    .orElseThrow(() -> new RuntimeException("Category not found"));
+            book.setCategory(category);
+        }
+
+        // Authors
+        if (request.getAuthors() != null && !request.getAuthors().isEmpty()) {
+            List<BooksAuthor> booksAuthors = request.getAuthors().stream().map(a -> {
+                BooksAuthor ba = new BooksAuthor();
+                UUID authorId = UUID.fromString(a.getAuthorId());
+                Author author = authorRepository.findById(authorId)
+                        .orElseThrow(() -> new RuntimeException("Author not found"));
+                ba.setAuthor(author);
+                ba.setBooks(book);
+                return ba;
+            }).toList();
+            book.setBooksAuthors(booksAuthors);
+        }
+    }
+
+    public String getBookAttachment(UUID bookId,String attachment) {
+        Books book = booksRepository.findById(bookId)
+                .orElseThrow(() -> new BookNotFoundException(String.valueOf(bookId)));
+
+        // Split bucket and object
+        String[] parts = attachment.split("/", 2);
+        String bucket = parts[0];
+        String objectName = parts[1];
+
+        return minioService.getPresignedUrl(bucket, objectName, 10); // URL valid 10 minutes
+    }
+
+
+
+    private BookResponse mapToResponse(Books book) {
+        BookResponse response = new BookResponse();
+        response.setBookId(book.getBookId().toString());
+        response.setTitle(book.getTitle());
+        response.setIsbn(book.getIsbn());
+        response.setDescription(book.getDescription());
+        response.setLanguage(book.getLanguage());
+        response.setPageCount(book.getPageCount());
+        response.setPublishedDate(book.getPublishedDate());
+        response.setCoverImageUrl(book.getCoverImageUrl());
+        response.setAttachmentUrl(book.getAttachmentUrl());
+        response.setPages(book.getPageCount()); // assuming pages = pageCount
+        response.setPublishYear(book.getPublishedDate() != null ? book.getPublishedDate().getYear() : 0);
+
+        // Publisher
+        if (book.getPublisher() != null) {
+            BookResponse.PublisherDTO publisherDTO = new BookResponse.PublisherDTO();
+            publisherDTO.setPublisherId(book.getPublisher().getPublisherId().toString());
+            publisherDTO.setName(book.getPublisher().getFirstname()+" "+book.getPublisher().getLastname());
+            response.setPublisher(publisherDTO);
+        }
+
+        // Category
+        if (book.getCategory() != null) {
+            BookResponse.CategoryDTO categoryDTO = new BookResponse.CategoryDTO();
+            categoryDTO.setCategoryId(book.getCategory().getCategoryId().toString());
+            categoryDTO.setName(book.getCategory().getName());
+            response.setCategory(categoryDTO);
+        }
+
+        // Authors
+        if (book.getBooksAuthors() != null && !book.getBooksAuthors().isEmpty()) {
+            List<BookResponse.AuthorDTO> authors = book.getBooksAuthors().stream().map(ba -> {
+                BookResponse.AuthorDTO authorDTO = new BookResponse.AuthorDTO();
+                authorDTO.setAuthorId(ba.getAuthor().getAuthorId().toString());
+                authorDTO.setName(ba.getAuthor().getFirstname()+" "+ba.getAuthor().getLastname());
+                return authorDTO;
+            }).toList();
+            response.setAuthors(authors);
+        }
+
+        return response;
+    }
+
+
+    public List<Books> getBooksByCategory(UUID categoryId) {
+        return booksRepository.findByCategory_CategoryId(categoryId);
+    }
+
+    public List<Books> getBooksByPublisher(UUID publisherId) {
+        return booksRepository.findByPublisher_PublisherId(publisherId);
+    }
+
+}
