@@ -18,11 +18,22 @@ public interface BookRepository extends JpaRepository<Books, UUID> {
     Optional<Books> findByIsbn(String isbn);
     List<Books> findByTitleContainingIgnoreCase(String title);
     // Search by title, author, or ISBN with pagination
-    @Query("SELECT b FROM Books b WHERE " +
-            "LOWER(b.title) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(b.booksAuthors) LIKE LOWER(CONCAT('%', :searchTerm, '%')) OR " +
-            "LOWER(b.isbn) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
+
+    @Query("""
+    SELECT DISTINCT b FROM Books b
+    LEFT JOIN b.booksAuthors ba
+    LEFT JOIN b.category c
+    WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+       OR LOWER(ba.author.firstname) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+       OR LOWER(ba.author.lastname) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+       OR LOWER(c.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+       OR LOWER(b.isbn) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+""")
     Page<Books> searchBooks(@Param("searchTerm") String searchTerm, Pageable pageable);
+
+    @Query("SELECT DISTINCT b FROM Books b WHERE b.category.categoryId = :categoryId")
+    Page<Books> searchBooksByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
+
 
     Page<Books> findByCategory(String category, Pageable pageable);
 

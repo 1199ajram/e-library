@@ -1,7 +1,9 @@
 package Ziaat.E_library.Controllers;
 
 import Ziaat.E_library.Dto.*;
+import Ziaat.E_library.Dto.IssueHistory.IssueHistoryDTO;
 import Ziaat.E_library.Services.BookCopyService;
+import Ziaat.E_library.Services.IssueHistoryService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,9 @@ public class BookCopyController {
 
     @Autowired
     private BookCopyService bookCopyService;
+
+    @Autowired
+    private IssueHistoryService issueHistoryService;
 
     @Operation(summary = "Create a new book copy")
     @PostMapping
@@ -54,10 +59,17 @@ public class BookCopyController {
 
     @Operation(summary = "Issue a book to a member")
     @PostMapping("/issue")
-    public ResponseEntity<IssueHistoryResponse> issueBook(@RequestBody IssueBookRequest request) {
-        IssueHistoryResponse response = bookCopyService.issueBook(request);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<IssueHistoryDTO> issueBook(@RequestBody IssueBookRequest request) {
+        IssueHistoryDTO issue = issueHistoryService.issueBook(
+                request.getCopyId(),
+                request.getBookId(),
+                request.getMemberId(),
+                request.getNotes(),
+                request.getIssuedBy()
+        );
+        return ResponseEntity.ok(issue);
     }
+
 
     @Operation(summary = "Return a borrowed book")
     @PostMapping("/{copyId}/return")

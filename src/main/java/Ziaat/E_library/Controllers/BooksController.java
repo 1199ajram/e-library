@@ -3,9 +3,11 @@ package Ziaat.E_library.Controllers;
 import Ziaat.E_library.Dto.BookRequest;
 import Ziaat.E_library.Dto.BookResponse;
 import Ziaat.E_library.Dto.MemberResponse;
+import Ziaat.E_library.Dto.minioDto.GetContentDto;
 import Ziaat.E_library.Model.Books;
 import Ziaat.E_library.Services.BooksService;
 import Ziaat.E_library.Utils.PageResponse;
+import Ziaat.E_library.Utils.Response;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
@@ -72,9 +75,12 @@ public class BooksController {
             @RequestParam(defaultValue = "asc") String sortDir,
 
             @Parameter(description = "Search term to filter Bookss by name", example = "John")
-            @RequestParam(required = false) String search
+            @RequestParam(required = false) String search,
+
+            @Parameter(description = "Search term to filter Bookss by name", example = "John")
+            @RequestParam(required = false) UUID categoryId
     ) {
-        Page<Books> BooksPage = BooksService.getAllBooks(page, size, sortBy, sortDir, search);
+        Page<Books> BooksPage = BooksService.getAllBooks(page, size, sortBy, sortDir, search,categoryId);
 
         PageResponse<Books> response = new PageResponse<>();
         response.setContent(BooksPage.getContent());
@@ -143,6 +149,24 @@ public class BooksController {
     public ResponseEntity<String> downloadAttachment(@PathVariable UUID id,@PathVariable String attachment) {
         String presignedUrl = BooksService.getBookAttachment(id,attachment);
         return ResponseEntity.ok(presignedUrl);
+    }
+
+
+
+
+
+    @PostMapping("/get-content")
+    public ResponseEntity<Response> getObject(@RequestBody GetContentDto request) throws IOException {
+        Response response = BooksService.getObject(request);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/remove-content/{bucket}/{objectname}")
+    public ResponseEntity<Response> removeObject(
+            @PathVariable String bucket,
+            @PathVariable String objectname) throws IOException {
+        Response response = BooksService.removeObject(bucket, objectname);
+        return ResponseEntity.ok(response);
     }
 
 }

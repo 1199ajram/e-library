@@ -3,9 +3,13 @@ package Ziaat.E_library.Services;
 import Ziaat.E_library.Dto.BookRequest;
 import Ziaat.E_library.Dto.BookResponse;
 import Ziaat.E_library.Dto.MemberResponse;
+import Ziaat.E_library.Dto.minioDto.FileDto;
+import Ziaat.E_library.Dto.minioDto.GetContentDto;
 import Ziaat.E_library.Exception.BookNotFoundException;
 import Ziaat.E_library.Model.*;
 import Ziaat.E_library.Repository.*;
+import Ziaat.E_library.Utils.Response;
+import Ziaat.E_library.Utils.ResponseCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +17,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+
+import java.io.IOException;
+import java.io.InputStream;
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -37,6 +45,7 @@ public class BooksService {
 
     @Autowired
     private MinioService minioService;
+
 
 
     @Autowired
@@ -74,7 +83,7 @@ public class BooksService {
                 .orElseThrow(() -> new BookNotFoundException(String.valueOf(id)));
     }
 
-    public Page<Books> getAllBooks(int page, int size, String sortBy, String sortDir, String search) {
+    public Page<Books> getAllBooks(int page, int size, String sortBy, String sortDir, String search,UUID categoryId) {
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
@@ -83,6 +92,9 @@ public class BooksService {
 
         if (search != null && !search.trim().isEmpty()) {
             return booksRepository.searchBooks(search, pageable);
+        }
+        if (categoryId != null) {
+            return booksRepository.searchBooksByCategoryId(categoryId, pageable);
         }
 
         return booksRepository.findAll(pageable);
@@ -243,5 +255,33 @@ public class BooksService {
     public List<Books> getBooksByPublisher(UUID publisherId) {
         return booksRepository.findByPublisher_PublisherId(publisherId);
     }
+
+    public Response getObject(GetContentDto request) throws IOException {
+        Response<FileDto> resp = new Response<>();
+        FileDto data = new FileDto();
+
+        InputStream stream = minioService.getObject(request.getBucketName(), request.getAttachmentUrl());
+        String[] fileName = request.getAttachmentUrl().split("[.]");
+        String fileExtension = fileName[fileName.length - 1];
+
+        final var bytes = stream.readAllBytes();
+        String content = Base64.getEncoder().encodeToString(bytes);
+
+        data.setContent(content);
+        data.setFileType(fileExtension);
+        resp.setStatus(true);
+        resp.setData(data);
+        resp.setCode(200);
+        resp.setDescription("Object Returned");
+        return resp;
+    }
+
+    public Response removeObject(String bucket, String objectname) throws IOException {
+        var rem = minioService.removeObject(bucket, objectname);
+        return new Response<>(true, ResponseCode.SUCCESS, rem, "Object Removed");
+    }
+
+
+
 
 }

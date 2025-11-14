@@ -76,33 +76,33 @@ public class BookCopyService {
     }
 
     // Issue Book
-    public IssueHistoryResponse issueBook(IssueBookRequest request) {
-        BookCopy bookCopy = bookCopyRepository.findById(UUID.fromString(request.getCopyId()))
-                .orElseThrow(() -> new RuntimeException("Book copy not found"));
-
-        if (bookCopy.getStatus() != CopyStatus.AVAILABLE) {
-            throw new RuntimeException("Book copy is not available for issue");
-        }
-
-        // Update book copy status
-        bookCopy.setStatus(CopyStatus.BORROWED);
-        bookCopy.setCurrentBorrower(request.getMemberName());
-        bookCopy.setDueDate(request.getDueDate());
-        bookCopyRepository.save(bookCopy);
-
-        // Create issue history
-        IssueHistory issueHistory = new IssueHistory();
-        issueHistory.setBookCopy(bookCopy);
-        issueHistory.setBook(bookCopy.getBook());
-        issueHistory.setMemberName(request.getMemberName());
-//        issueHistory.setMemberId(request.getMemberId());
-        issueHistory.setIssueDate(LocalDateTime.now());
-        issueHistory.setDueDate(request.getDueDate());
-        issueHistory.setNotes(request.getNotes());
-        issueHistory.setReturned(false);
-
-        return mapToHistoryResponse(issueHistoryRepository.save(issueHistory));
-    }
+//    public IssueHistoryResponse issueBook(IssueBookRequest request) {
+//        BookCopy bookCopy = bookCopyRepository.findById(UUID.fromString(request.getCopyId()))
+//                .orElseThrow(() -> new RuntimeException("Book copy not found"));
+//
+//        if (bookCopy.getStatus() != CopyStatus.AVAILABLE) {
+//            throw new RuntimeException("Book copy is not available for issue");
+//        }
+//
+//        // Update book copy status
+//        bookCopy.setStatus(CopyStatus.BORROWED);
+//        bookCopy.setCurrentBorrower(String.valueOf(request.getMemberId()));
+//        bookCopy.setDueDate(null);
+//        bookCopyRepository.save(bookCopy);
+//
+//        // Create issue history
+//        IssueHistory issueHistory = new IssueHistory();
+//        issueHistory.setBookCopy(bookCopy);
+//        issueHistory.setBook(bookCopy.getBook());
+//        issueHistory.setMemberName(request.getMemberName());
+////        issueHistory.setMemberId(request.getMemberId());
+//        issueHistory.setIssueDate(LocalDateTime.now());
+//        issueHistory.setDueDate(request.getDueDate());
+//        issueHistory.setNotes(request.getNotes());
+//        issueHistory.setReturned(false);
+//
+//        return mapToHistoryResponse(issueHistoryRepository.save(issueHistory));
+//    }
 
     // Return Book
     public IssueHistoryResponse returnBook(UUID copyId) {

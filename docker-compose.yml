@@ -1,0 +1,45 @@
+version: "3.7"
+services:
+  learning:
+    image: library-api:latest
+    container_name: library-api
+    build: .
+    restart: always
+    ports:
+      - 6565:6565
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://psmis-db:5440/library_db
+      SPRING_DATASOURCE_USERNAME: psmis
+      SPRING_DATASOURCE_PASSWORD: psmisDb@2025
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#    volumes:
+#      - /home/development/documents/hrmis:/home
+networks:
+  default:
+    external:
+      name: ziaat_default
+
+###
+#version: "3.7"
+#services:
+#  learning:
+#    image: learning-api:latest
+#    container_name: learning-api
+#    build: .
+#    restart: always
+#    ports:
+#      - 6062:6062
+#    env_file:
+#      - /usr/local/environment/.env
+#    volumes:
+#      - /usr/local/environment/.env:/usr/local/environment/.env
+#    environment:
+#      - DOTENV_PATH=/usr/local/environment/.env
+##    volumes:
+##      - /home/development/documents/hrmis:/home
+#networks:
+#  default:
+#    external:
+#      name: ziaat_default
+#
+#

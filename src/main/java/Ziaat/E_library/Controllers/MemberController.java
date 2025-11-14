@@ -51,6 +51,13 @@ public class MemberController {
         return ResponseEntity.ok(members);
     }
 
+    @GetMapping("/members")
+    public ResponseEntity<List<MemberResponse>> getMembers(@RequestParam(required = false) String search) {
+        List<MemberResponse> members = memberService.searchMembers(search);
+        return ResponseEntity.ok(members);
+    }
+
+
 
     @Operation(summary = "Get member by ID")
     @GetMapping("/{id}")

@@ -109,4 +109,7 @@ public class ReservationController {
         reservationService.fulfillReservation(id);
         return ResponseEntity.ok().build();
     }
+
+
+
 }

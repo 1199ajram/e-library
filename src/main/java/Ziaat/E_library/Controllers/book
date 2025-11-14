@@ -1,0 +1,37 @@
+package com.elibrary.controller;
+
+import com.elibrary.service.BookService;
+import com.elibrary.util.UserContextUtil;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/books")
+public class BookController {
+
+    private final BookService bookService;
+    private final UserContextUtil userContextUtil;
+
+    public BookController(BookService bookService, UserContextUtil userContextUtil) {
+        this.bookService = bookService;
+        this.userContextUtil = userContextUtil;
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getAllBooks() {
+        String username = userContextUtil.getCurrentUsername();
+        return ResponseEntity.ok(bookService.getAllBooks(username));
+    }
+
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<?> addBook(@RequestBody BookDTO book) {
+        return ResponseEntity.ok(bookService.addBook(book));
+    }
+
+    @GetMapping("/my-borrowed")
+    public ResponseEntity<?> getMyBorrowedBooks() {
+        Integer userId = userContextUtil.getCurrentUserId();
+        return ResponseEntity.ok(bookService.getBorrowedBooks(userId));
+    }
+}

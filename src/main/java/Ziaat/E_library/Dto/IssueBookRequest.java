@@ -5,14 +5,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class IssueBookRequest {
-    private String copyId;
-    private String memberName;
-    private String memberId;
-    private LocalDateTime dueDate;
+    private UUID copyId;
+    private UUID bookId;
+    private UUID memberId;
     private String notes;
+    private String issuedBy;
 }

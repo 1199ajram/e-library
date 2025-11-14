@@ -15,6 +15,7 @@ import java.util.UUID;
 @Repository
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
     List<Reservation> findByMember_MemberIdAndStatus(UUID memberId, Reservation.ReservationStatus status);
+    List<Reservation> findByMember_UserIdAndStatus(Long userId, Reservation.ReservationStatus status);
     List<Reservation> findByBook_BookIdAndStatus(UUID bookId, Reservation.ReservationStatus status);
     Long countByStatusAndBook_BookId(Reservation.ReservationStatus status, UUID bookId);
 

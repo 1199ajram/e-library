@@ -1,11 +1,7 @@
 package Ziaat.E_library.Services;
 
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.GetPresignedObjectUrlArgs;
+import io.minio.*;
 import io.minio.http.Method;
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -97,7 +93,7 @@ public class MinioService {
                         .build());
             }
 
-            String result = bucket + "/" + objectName;
+            String result = objectName;
             System.out.println("Upload successful: " + result);
             return result;
 
@@ -112,58 +108,36 @@ public class MinioService {
         }
     }
 
-    /**
-     * Get content type from filename extension
-     */
-    private String getContentTypeFromFilename(String filename) {
-        if (filename == null) {
-            return "application/octet-stream";
-        }
 
-        String lowerFilename = filename.toLowerCase();
 
-        // Images
-        if (lowerFilename.endsWith(".jpg") || lowerFilename.endsWith(".jpeg")) {
-            return "image/jpeg";
-        } else if (lowerFilename.endsWith(".png")) {
-            return "image/png";
-        } else if (lowerFilename.endsWith(".gif")) {
-            return "image/gif";
-        } else if (lowerFilename.endsWith(".bmp")) {
-            return "image/bmp";
-        } else if (lowerFilename.endsWith(".webp")) {
-            return "image/webp";
-        }
-        // Documents
-        else if (lowerFilename.endsWith(".pdf")) {
-            return "application/pdf";
-        } else if (lowerFilename.endsWith(".doc")) {
-            return "application/msword";
-        } else if (lowerFilename.endsWith(".docx")) {
-            return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-        }
 
-        return "application/octet-stream";
-    }
-    /**
-     * Ensure bucket exists, create if it doesn't
-     */
-    private void ensureBucketExists(String bucket) throws Exception {
-        boolean found = minioClient.bucketExists(BucketExistsArgs.builder()
-                .bucket(bucket)
-                .build());
 
-        if (!found) {
-            System.out.println("Creating bucket: " + bucket);
-            minioClient.makeBucket(MakeBucketArgs.builder()
+    /** ✅ Download object from MinIO */
+    public InputStream getObject(String bucket, String objectName) {
+        try {
+            return minioClient.getObject(GetObjectArgs.builder()
                     .bucket(bucket)
+                    .object(objectName)
                     .build());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to download object from MinIO", e);
         }
     }
 
-    /**
-     * Get presigned URL for downloading
-     */
+    /** ✅ Remove object from MinIO */
+    public boolean removeObject(String bucket, String objectName) {
+        try {
+            minioClient.removeObject(RemoveObjectArgs.builder()
+                    .bucket(bucket)
+                    .object(objectName)
+                    .build());
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to remove object from MinIO", e);
+        }
+    }
+
+    /** Generate a presigned download URL */
     public String getPresignedUrl(String bucket, String objectName, int expiryMinutes) {
         try {
             return minioClient.getPresignedObjectUrl(
@@ -171,11 +145,30 @@ public class MinioService {
                             .method(Method.GET)
                             .bucket(bucket)
                             .object(objectName)
-                            .expiry(expiryMinutes * 60) // expiry in seconds
+                            .expiry(expiryMinutes * 60)
                             .build()
             );
         } catch (Exception e) {
             throw new RuntimeException("Failed to generate presigned URL", e);
         }
     }
+
+    /** Ensure bucket exists */
+    private void ensureBucketExists(String bucket) throws Exception {
+        boolean found = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
+        if (!found) {
+            minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
+        }
+    }
+
+    /** Helper: Guess content type */
+    private String getContentTypeFromFilename(String filename) {
+        if (filename == null) return "application/octet-stream";
+        String lower = filename.toLowerCase();
+        if (lower.endsWith(".jpg") || lower.endsWith(".jpeg")) return "image/jpeg";
+        if (lower.endsWith(".png")) return "image/png";
+        if (lower.endsWith(".pdf")) return "application/pdf";
+        return "application/octet-stream";
+    }
+
 }

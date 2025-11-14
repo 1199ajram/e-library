@@ -25,6 +25,9 @@ public class Member {
     @Column(unique = true, nullable = false)
     private String membershipNumber;
 
+    @Column(unique = true, nullable = true)
+    private Long userId;
+
     @Column(nullable = false)
     private String firstname;
 
