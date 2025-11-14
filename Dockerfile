@@ -27,7 +27,7 @@ WORKDIR /app
 COPY --from=builder /app/target/e-library-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose port (default Spring Boot port)
-EXPOSE 8080
+EXPOSE 6565
 
 # Run the application
 ENTRYPOINT ["java", "-jar", "app.jar"]
