@@ -48,8 +48,8 @@ public class Books {
     private Publisher publisher;
 
     @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
+    @JoinColumn(name = "level_id")
+    private Level level;
 
     private LocalDate publishedDate;
     private String description;
@@ -59,6 +59,10 @@ public class Books {
     @Column(name = "attachment_url", nullable = true)
     private String attachmentUrl;
 
+
+    private String edition;
+    private String placeOfPublisher;
+    private String classificationNo;
 
     private String createdBy;
     private String updatedBy;

@@ -122,7 +122,7 @@ public class CategoryController {
     }
 
     @GetMapping("/active")
-    public ResponseEntity<List<Category>> getActive() {
+    public ResponseEntity<List<CategoryResponse>> getActive() {
         return ResponseEntity.ok(categoryService.getActive());
     }
 }

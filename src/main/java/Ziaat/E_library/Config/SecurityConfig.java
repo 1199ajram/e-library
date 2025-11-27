@@ -29,6 +29,8 @@ public class SecurityConfig {
                         // Public endpoints - NO authentication required
                         .requestMatchers(
                                 "/api/member-login",
+                                "/api/books/public/**",
+                                "/api/books/get-content",
                                 "/api/public/**",
                                 "/api/refresh-token",
                                 "/actuator/**",

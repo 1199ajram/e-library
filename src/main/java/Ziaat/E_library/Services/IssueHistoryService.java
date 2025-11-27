@@ -59,6 +59,7 @@ public class IssueHistoryService {
         // Validate member
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
+        System.out.println("Member: " +issuedBy);
 
         // Check if member has reached borrowing limit
         long currentIssues = issueHistoryRepository.countCurrentIssuesByMember(memberId);
@@ -75,13 +76,16 @@ public class IssueHistoryService {
         BookCopy bookCopy = bookCopyRepository.findById(copyId)
                 .orElseThrow(() -> new RuntimeException("Book copy not found"));
 
+        System.out.println("STATUS ========="+bookCopy.getStatus());
+
         // Validate book
         Books book = booksRepository.findById(bookId)
                 .orElseThrow(() -> new RuntimeException("Book not found"));
 
         // Check if copy is available
-        if (!"AVAILABLE".equals(bookCopy.getStatus())) {
-            throw new RuntimeException("Book copy is not available for borrowing");
+        if (bookCopy.getStatus() != CopyStatus.AVAILABLE) {
+            throw new RuntimeException("Book copy is not available for borrowing. Current status: " +
+                    bookCopy.getStatus());
         }
 
         // Check if copy is already issued

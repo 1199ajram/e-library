@@ -61,7 +61,7 @@ public class BooksController {
             )
     })
     @GetMapping
-    public ResponseEntity<PageResponse<Books>> getAllBookss(
+    public ResponseEntity<PageResponse<BookResponse>> getAllBookss(
             @Parameter(description = "Page number (0-indexed)", example = "0")
             @RequestParam(defaultValue = "0") int page,
 
@@ -80,9 +80,61 @@ public class BooksController {
             @Parameter(description = "Search term to filter Bookss by name", example = "John")
             @RequestParam(required = false) UUID categoryId
     ) {
-        Page<Books> BooksPage = BooksService.getAllBooks(page, size, sortBy, sortDir, search,categoryId);
+        Page<BookResponse> BooksPage = BooksService.getAllBooks(page, size, sortBy, sortDir, search,categoryId);
 
-        PageResponse<Books> response = new PageResponse<>();
+        PageResponse<BookResponse> response = new PageResponse<>();
+        response.setContent(BooksPage.getContent());
+        response.setPageNumber(BooksPage.getNumber());
+        response.setPageSize(BooksPage.getSize());
+        response.setTotalElements(BooksPage.getTotalElements());
+        response.setTotalPages(BooksPage.getTotalPages());
+        response.setLast(BooksPage.isLast());
+        response.setFirst(BooksPage.isFirst());
+        response.setHasNext(BooksPage.hasNext());
+        response.setHasPrevious(BooksPage.hasPrevious());
+
+        return ResponseEntity.ok(response);
+    }
+
+
+
+
+
+
+    @Operation(
+            summary = "Get all Public books with pagination and search",
+            description = "Retrieves a paginated list of Public books with optional search functionality"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Successfully retrieved paginated list of Public books",
+                    content = @Content(schema = @Schema(implementation = PageResponse.class))
+            )
+    })
+    @GetMapping("/public")
+    public ResponseEntity<PageResponse<BookResponse>> getAllPublicBooks(
+            @Parameter(description = "Page number (0-indexed)", example = "0")
+            @RequestParam(defaultValue = "0") int page,
+
+            @Parameter(description = "Number of items per page", example = "10")
+            @RequestParam(defaultValue = "10") int size,
+
+            @Parameter(description = "Field to sort by", example = "firstname")
+            @RequestParam(defaultValue = "id") String sortBy,
+
+            @Parameter(description = "Sort direction (asc or desc)", example = "asc")
+            @RequestParam(defaultValue = "asc") String sortDir,
+
+            @Parameter(description = "Search term to filter Bookss by name", example = "John")
+            @RequestParam(required = false) String search,
+
+            @Parameter(description = "Search term to filter Bookss by name", example = "John")
+            @RequestParam(required = false) UUID categoryId
+    ) {
+        Page<BookResponse> BooksPage = BooksService.getAllBooks(page, size, sortBy, sortDir, search,categoryId);
+
+        PageResponse<BookResponse> response = new PageResponse<>();
         response.setContent(BooksPage.getContent());
         response.setPageNumber(BooksPage.getNumber());
         response.setPageSize(BooksPage.getSize());
@@ -110,7 +162,7 @@ public class BooksController {
             description = "Retrieves a specific Books by their ID"
     )
     @GetMapping("/{id}")
-    public ResponseEntity<Books> getBooksById(
+    public ResponseEntity<BookResponse> getBooksById(
             @Parameter(description = "Books ID", required = true)
             @PathVariable UUID id) {
         return ResponseEntity.ok(BooksService.getBookById(id));

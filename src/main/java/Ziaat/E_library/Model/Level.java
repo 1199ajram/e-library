@@ -5,30 +5,33 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "category")
+@Table(name = "levels")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Category {
+public class Level {
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
-    @Column(name = "category_id",updatable = false, nullable = false)
-    private UUID categoryId;
-    private String name;
+    @Column(name = "level_id", updatable = false, nullable = false)
+    private UUID levelId;
+
+    @Column(name = "level_name", nullable = false)
+    private String levelName;
+
+    @Column(name = "level_code",nullable = true)
+    private String levelCode;
+
+    @ManyToOne
+    @JoinColumn(name = "program_id", nullable = false)
+    private Program program;
     @Column(name = "is_active")
     private Boolean isActive;
-
-    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
-    @com.fasterxml.jackson.annotation.JsonIgnore
-    private List<Program> programs;
-
-
     private String createdBy;
     private String updatedBy;
     private LocalDateTime createdAt;
@@ -44,4 +47,3 @@ public class Category {
         updatedAt = LocalDateTime.now();
     }
 }
-

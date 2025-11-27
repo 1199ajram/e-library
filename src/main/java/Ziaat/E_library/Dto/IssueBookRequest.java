@@ -15,5 +15,4 @@ public class IssueBookRequest {
     private UUID bookId;
     private UUID memberId;
     private String notes;
-    private String issuedBy;
 }

@@ -4,6 +4,7 @@ import Ziaat.E_library.Dto.*;
 import Ziaat.E_library.Dto.IssueHistory.IssueHistoryDTO;
 import Ziaat.E_library.Services.BookCopyService;
 import Ziaat.E_library.Services.IssueHistoryService;
+import Ziaat.E_library.Utils.UserContextUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Tag(name = "Book Copies Management", description = "APIs for managing physical book copies")
 public class BookCopyController {
+    private final UserContextUtil userContextUtil;
 
     @Autowired
     private BookCopyService bookCopyService;
@@ -60,12 +62,16 @@ public class BookCopyController {
     @Operation(summary = "Issue a book to a member")
     @PostMapping("/issue")
     public ResponseEntity<IssueHistoryDTO> issueBook(@RequestBody IssueBookRequest request) {
+//        Integer userId = userContextUtil.getCurrentUserId();
+        Integer userId = userContextUtil.getCurrentUserId();
+        System.out.println("Extracted userId: " + userId); // ✅ Debug
+
         IssueHistoryDTO issue = issueHistoryService.issueBook(
                 request.getCopyId(),
                 request.getBookId(),
                 request.getMemberId(),
                 request.getNotes(),
-                request.getIssuedBy()
+                String.valueOf(userId)
         );
         return ResponseEntity.ok(issue);
     }

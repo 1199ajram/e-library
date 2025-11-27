@@ -3,7 +3,6 @@ package Ziaat.E_library.Dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -17,39 +16,25 @@ public class BookRequest {
     private String description;
     private String language;
     private int pageCount;
-    private String publishedDate; // format: "YYYY-MM-DD"
+
+    private String publishedDate;
+
     private String coverImageUrl;
     private String coverImageName;
-    private String  attachmentUrl;
+
+    private String attachmentUrl;
     private String attachmentName;
-    private int rating;
-    private String author; // single author name if needed
-    private int pages;
-    private int publishYear;
 
-    private PublisherDTO publisher;
-    private CategoryDTO category;
-    private List<AuthorDTO> authors;
+    private String edition;
+    private String placeOfPublisher;
+    private String classificationNo;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class PublisherDTO {
-        private String publisherId;
-    }
+    // IDs from payload
+    private String categoryId;
+    private String publisherId;
+    private String levelId;
+    private String programId;
 
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class CategoryDTO {
-        private String categoryId;
-    }
-
-    @Data
-    @AllArgsConstructor
-    @NoArgsConstructor
-    public static class AuthorDTO {
-        private String authorId;
-    }
+    // Authors list
+    private List<String> authorIds;
 }
-

@@ -5,6 +5,7 @@ import Ziaat.E_library.Dto.IssueHistory.IssueHistoryDTO;
 import Ziaat.E_library.Dto.IssueHistory.ReturnBookRequest;
 import Ziaat.E_library.Services.IssueHistoryService;
 
+import Ziaat.E_library.Utils.UserContextUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,7 +26,7 @@ import java.util.UUID;
 @Tag(name = "issues Management", description = "APIs for managing book issues")
 public class IssueHistoryController {
     private final IssueHistoryService issueHistoryService;
-
+    private final UserContextUtil userContextUtil;
     // Get current issues for a member
     @GetMapping("/member/{memberId}/current")
     public ResponseEntity<List<IssueHistoryDTO>> getCurrentIssuesByMember(@PathVariable UUID memberId) {
@@ -71,12 +72,13 @@ public class IssueHistoryController {
     // Issue a book
     @PostMapping
     public ResponseEntity<IssueHistoryDTO> issueBook(@RequestBody IssueBookRequest request) {
+        Integer userId = userContextUtil.getCurrentUserId();
         IssueHistoryDTO issue = issueHistoryService.issueBook(
                 request.getCopyId(),
                 request.getBookId(),
                 request.getMemberId(),
                 request.getNotes(),
-                request.getIssuedBy()
+                String.valueOf(userId)
         );
         return ResponseEntity.ok(issue);
     }

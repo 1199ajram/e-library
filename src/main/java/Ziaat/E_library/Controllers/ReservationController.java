@@ -1,6 +1,7 @@
 package Ziaat.E_library.Controllers;
 
 import Ziaat.E_library.Dto.ReservationRequest;
+import Ziaat.E_library.Dto.ReservationResponseDto;
 import Ziaat.E_library.Model.Author;
 import Ziaat.E_library.Model.Reservation;
 import Ziaat.E_library.Services.ReservationService;
@@ -41,7 +42,7 @@ public class ReservationController {
             )
     })
     @GetMapping
-    public ResponseEntity<PageResponse<Reservation>> getAllReservation(
+    public ResponseEntity<PageResponse<ReservationResponseDto>> getAllReservation(
             @Parameter(description = "Page number (0-indexed)", example = "0")
             @RequestParam(defaultValue = "0") int page,
 
@@ -61,9 +62,9 @@ public class ReservationController {
             @RequestParam(required = false) Reservation.ReservationStatus status
 
     ) {
-        Page<Reservation> reservationPage = reservationService.getAllReservationByStatus(page, size, sortBy, sortDir, search,status);
+        Page<ReservationResponseDto> reservationPage = reservationService.getAllReservationByStatus(page, size, sortBy, sortDir, search,status);
 
-        PageResponse<Reservation> response = new PageResponse<>();
+        PageResponse<ReservationResponseDto> response = new PageResponse<>();
         response.setContent(reservationPage.getContent());
         response.setPageNumber(reservationPage.getNumber());
         response.setPageSize(reservationPage.getSize());
@@ -80,19 +81,19 @@ public class ReservationController {
 
     @Operation(summary = "Create a new reservation")
     @PostMapping
-    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationRequest request) {
+    public ResponseEntity<ReservationResponseDto> createReservation(@RequestBody ReservationRequest request) {
         return ResponseEntity.ok(reservationService.createReservation(request));
     }
 
     @Operation(summary = "Get reservations by member")
     @GetMapping("/member/{memberId}")
-    public ResponseEntity<List<Reservation>> getReservationsByMember(@PathVariable UUID memberId) {
+    public ResponseEntity<List<ReservationResponseDto>> getReservationsByMember(@PathVariable UUID memberId) {
         return ResponseEntity.ok(reservationService.getReservationsByMember(memberId));
     }
 
     @Operation(summary = "Get reservations by book")
     @GetMapping("/book/{bookId}")
-    public ResponseEntity<List<Reservation>> getReservationsByBook(@PathVariable UUID bookId) {
+    public ResponseEntity<List<ReservationResponseDto>> getReservationsByBook(@PathVariable UUID bookId) {
         return ResponseEntity.ok(reservationService.getReservationsByBook(bookId));
     }
 

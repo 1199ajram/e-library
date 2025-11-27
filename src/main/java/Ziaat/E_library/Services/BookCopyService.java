@@ -1,6 +1,7 @@
 package Ziaat.E_library.Services;
 
 import Ziaat.E_library.Dto.*;
+import Ziaat.E_library.Dto.IssueHistory.MemberDTO;
 import Ziaat.E_library.Enumerated.CopyStatus;
 import Ziaat.E_library.Enumerated.CopyType;
 import Ziaat.E_library.Model.*;
@@ -23,6 +24,7 @@ public class BookCopyService {
     private final BookCopyRepository bookCopyRepository;
     private final BookRepository bookRepository;
     private final IssueHistoryRepository issueHistoryRepository;
+    private final MemberRepository memberRepository;
 
     // Create Book Copy
     public BookCopyResponse createBookCopy(BookCopyRequest request) {
@@ -157,6 +159,20 @@ public class BookCopyService {
     }
 
     // Mapping methods
+//    private BookCopyResponse mapToResponse(BookCopy bookCopy) {
+//        BookCopyResponse response = new BookCopyResponse();
+//        response.setCopyId(bookCopy.getCopyId().toString());
+//        response.setBookId(bookCopy.getBook().getBookId().toString());
+//        response.setBarcode(bookCopy.getBarcode());
+//        response.setLocation(bookCopy.getLocation());
+//        response.setCopyType(String.valueOf(bookCopy.getCopyType()));
+//        response.setStatus(bookCopy.getStatus().name());
+//        response.setCurrentBorrower(bookCopy.getCurrentBorrower());
+//        response.setDueDate(bookCopy.getDueDate());
+//        response.setCreatedAt(bookCopy.getCreatedAt());
+//        return response;
+//    }
+
     private BookCopyResponse mapToResponse(BookCopy bookCopy) {
         BookCopyResponse response = new BookCopyResponse();
         response.setCopyId(bookCopy.getCopyId().toString());
@@ -168,6 +184,28 @@ public class BookCopyService {
         response.setCurrentBorrower(bookCopy.getCurrentBorrower());
         response.setDueDate(bookCopy.getDueDate());
         response.setCreatedAt(bookCopy.getCreatedAt());
+
+        // Fetch member details if there's a current borrower
+        if (bookCopy.getCurrentBorrower() != null) {
+            try {
+                UUID memberId = UUID.fromString(bookCopy.getCurrentBorrower());
+                Member member = memberRepository.findById(memberId)
+                        .orElse(null);
+
+                if (member != null) {
+                    MemberDTO memberDetails = new MemberDTO();
+                    memberDetails.setMemberId(member.getMemberId());
+                    memberDetails.setName(member.getFirstname() + " " + member.getLastname());
+                    memberDetails.setEmail(member.getEmail());
+                    memberDetails.setPhoneNumber(member.getPhone());
+                    memberDetails.setMemberType(member.getMembershipType().toString());
+
+                    response.setMemberDetails(memberDetails);
+                }
+            } catch (IllegalArgumentException e) {
+            }
+        }
+
         return response;
     }
 

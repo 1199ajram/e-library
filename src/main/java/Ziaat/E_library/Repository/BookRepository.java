@@ -22,23 +22,23 @@ public interface BookRepository extends JpaRepository<Books, UUID> {
     @Query("""
     SELECT DISTINCT b FROM Books b
     LEFT JOIN b.booksAuthors ba
-    LEFT JOIN b.category c
+    LEFT JOIN b.level c
     WHERE LOWER(b.title) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
        OR LOWER(ba.author.firstname) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
        OR LOWER(ba.author.lastname) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
-       OR LOWER(c.name) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
+       OR LOWER(c.levelName) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
        OR LOWER(b.isbn) LIKE LOWER(CONCAT('%', :searchTerm, '%'))
 """)
     Page<Books> searchBooks(@Param("searchTerm") String searchTerm, Pageable pageable);
 
-    @Query("SELECT DISTINCT b FROM Books b WHERE b.category.categoryId = :categoryId")
+    @Query("SELECT DISTINCT b FROM Books b WHERE b.level.levelId = :categoryId")
     Page<Books> searchBooksByCategoryId(@Param("categoryId") UUID categoryId, Pageable pageable);
 
 
-    Page<Books> findByCategory(String category, Pageable pageable);
+    Page<Books> findByLevel(String category, Pageable pageable);
 
 
-    List<Books> findByCategory_CategoryId(UUID categoryId);
+    List<Books> findByLevel_LevelId(UUID levelId);
     List<Books> findByPublisher_PublisherId(UUID publisherId);
 }
 

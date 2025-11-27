@@ -2,9 +2,7 @@ package Ziaat.E_library.Services;
 
 import Ziaat.E_library.Dto.CategoryRequest;
 import Ziaat.E_library.Dto.CategoryResponse;
-import Ziaat.E_library.Model.Author;
 import Ziaat.E_library.Model.Category;
-import Ziaat.E_library.Model.Publisher;
 import Ziaat.E_library.Repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class CategoryService {
@@ -61,13 +60,17 @@ public class CategoryService {
         return categoryRepository.findAll(pageable);
     }
 
-    public List<Category> getActive() {
-        return categoryRepository.findByIsActiveTrue();
+    public List<CategoryResponse> getActive() {
+        return categoryRepository.findByIsActiveTrue()
+                .stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
+
 
     private CategoryResponse mapToResponse(Category category) {
         CategoryResponse response = new CategoryResponse();
-        response.setId(category.getCategoryId());
+        response.setCategoryId(category.getCategoryId());
         response.setName(category.getName());
         response.setIsActive(category.getIsActive());
         return response;
