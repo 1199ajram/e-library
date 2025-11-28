@@ -1,6 +1,6 @@
 version: "3.7"
 services:
-  learning:
+  library:
     image: library-api:latest
     container_name: library-api
     build: .
