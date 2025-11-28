@@ -8,13 +8,21 @@ services:
     ports:
       - 6565:6565
     environment:
+      # Database
       SPRING_DATASOURCE_URL: jdbc:postgresql://psmis-db:5440/library_db
       SPRING_DATASOURCE_USERNAME: psmis
       SPRING_DATASOURCE_PASSWORD: psmisDb@2025
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
-      GATEWAY_AUTH_LOGIN: "http://user-management:6060/api/login/"
+      # ===== OAuth2 JWT CONFIG =====
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://testgateway.ziaatsmz.go.tz"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://testgateway.ziaatsmz.go.tz/.well-known/jwks.json"
+
+      # ===== GATEWAY CONFIG =====
+      GATEWAY_URL: "http://testgateway.ziaatsmz.go.tz/"
+      GATEWAY_AUTH_LOGIN: "http://user-management:6060/api/login"
       GATEWAY_AUTH_VERIFY: "http://user-management:6060/api/verify"
+
 
 networks:
   default:
