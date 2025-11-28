@@ -12,6 +12,9 @@ services:
       SPRING_DATASOURCE_USERNAME: psmis
       SPRING_DATASOURCE_PASSWORD: psmisDb@2025
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      GATEWAY_URL: http://102.214.44.250/
+      GATEWAY_AUTH_LOGIN: http://102.214.44.250/usermanagement-service/api/login
+      GATEWAY_AUTH_VERIFY: http://102.214.44.250/usermanagement-service/api/verify
 #    volumes:
 #      - /home/development/documents/hrmis:/home
 networks:
