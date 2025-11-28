@@ -25,9 +25,9 @@ public class AuthService {
     private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
     private final MemberRepository memberRepository;
 
-    @Value("${gateway.auth.login}")
-    private String loginUrl;
-
+//    @Value("${gateway.auth.login}")
+//    private String loginUrl;
+    private String loginUrl = "http://testgateway.ziaatsmz.go.tz/usermanagement-service/api/login";
 
     private final WebClient webClient;
 
