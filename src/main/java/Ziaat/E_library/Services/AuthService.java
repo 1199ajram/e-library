@@ -27,8 +27,9 @@ public class AuthService {
 
 //    @Value("${gateway.auth.login}")
 //    private String loginUrl;
-//    private String loginUrl = "http://testgateway.ziaatsmz.go.tz/usermanagement-service/api/login";
-    private String loginUrl = "http://user-management:6060/api/login";
+
+    private String loginUrl = "https://testgateway.ziaatsmz.go.tz/usermanagement-service/api/login";
+//    private String loginUrl = "http://user-management:6060/api/login";
 
     private final WebClient webClient;
 
