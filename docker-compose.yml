@@ -8,26 +8,21 @@ services:
     ports:
       - 6565:6565
     environment:
-      # Database
       SPRING_DATASOURCE_URL: jdbc:postgresql://psmis-db:5440/library_db
       SPRING_DATASOURCE_USERNAME: psmis
       SPRING_DATASOURCE_PASSWORD: psmisDb@2025
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
-
-      # ===== OAuth2 JWT CONFIG =====
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI: "http://testgateway.ziaatsmz.go.tz"
-      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI: "http://testgateway.ziaatsmz.go.tz/.well-known/jwks.json"
-
-      # ===== GATEWAY CONFIG =====
-      GATEWAY_URL: "http://testgateway.ziaatsmz.go.tz/"
-      GATEWAY_AUTH_LOGIN: "http://user-management:6060/api/login"
-      GATEWAY_AUTH_VERIFY: "http://user-management:6060/api/verify"
-
+      GATEWAY_URL: "http://user-management-api:6060"
+      GATEWAY_AUTH_LOGIN: "http://user-management-api:6060/api/auth/login"
+      GATEWAY_AUTH_VERIFY: "http://user-management-api:6060/api/auth/verify"
+    depends_on:
+      - user-management-api  # Add this if user-management-api is in same compose file
+    networks:
+      - ziaat_default
 
 networks:
-  default:
-    external:
-      name: ziaat_default
+  ziaat_default:
+    external: true
 
 ###
 #version: "3.7"
