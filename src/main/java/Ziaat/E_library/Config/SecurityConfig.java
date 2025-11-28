@@ -1,4 +1,5 @@
 package Ziaat.E_library.Config;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -22,30 +23,23 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Add CORS
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // use CorsConfig bean
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints - NO authentication required
+
+                        // Public endpoints
                         .requestMatchers(
                                 "/api/member-login",
                                 "/api/books/public/**",
                                 "/api/books/get-content",
                                 "/api/public/**",
                                 "/api/refresh-token",
-
-                                // ADD THESE - paths after nginx rewrite
-                                "/member-login",
-                                "/books/public/**",
-                                "/books/get-content",
-                                "/public/**",
-                                "/refresh-token",
-
                                 "/actuator/**",
                                 "/actuator/health",
 
-                                // Swagger UI endpoints
+                                // Swagger API
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
@@ -53,13 +47,12 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/webjars/**",
 
-                                // Error endpoint
                                 "/error"
                         ).permitAll()
 
-                        // Protected endpoints - authentication required
-                        .requestMatchers("/api/books/**", "/books/**").authenticated()
-                        .requestMatchers("/api/admin/**", "/admin/**").hasRole("ADMIN")
+                        // Protected endpoints
+                        .requestMatchers("/api/books/**").authenticated()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -67,18 +60,8 @@ public class SecurityConfig {
         return http.build();
     }
 
-    // Reference your CorsConfig
-    @Bean
-    public org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
-        org.springframework.web.cors.CorsConfiguration configuration = new org.springframework.web.cors.CorsConfiguration();
-        configuration.setAllowedOriginPatterns(java.util.Arrays.asList("*"));
-        configuration.setAllowedMethods(java.util.Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(java.util.Arrays.asList("*"));
-        configuration.setAllowCredentials(true);
-        configuration.setMaxAge(3600L);
-
-        org.springframework.web.cors.UrlBasedCorsConfigurationSource source = new org.springframework.web.cors.UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+    // Use the CORS bean from CorsConfig
+    private org.springframework.web.cors.CorsConfigurationSource corsConfigurationSource() {
+        return new CorsConfig().corsConfigurationSource();
     }
 }
