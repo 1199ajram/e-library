@@ -15,8 +15,6 @@ services:
       GATEWAY_URL: "http://user-management-api:6060"
       GATEWAY_AUTH_LOGIN: "http://user-management-api:6060/api/auth/login"
       GATEWAY_AUTH_VERIFY: "http://user-management-api:6060/api/auth/verify"
-    depends_on:
-      - user-management-api  # Add this if user-management-api is in same compose file
     networks:
       - ziaat_default
 
