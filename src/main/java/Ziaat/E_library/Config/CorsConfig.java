@@ -18,10 +18,16 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Allow requests from your Angular app
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:4200",
-                "http://localhost:4201"
-        ));
+//        configuration.setAllowedOrigins(Arrays.asList(
+//                "http://localhost:4200",
+//                "http://localhost:4201",
+//                "http://localhost:3030",
+//                "http://testgateway.ziaatsmz.go.tz:3030",
+//                "http://102.214.44.250:3030"
+//        ));
+
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
+
 
         // Allow all HTTP methods
         configuration.setAllowedMethods(Arrays.asList(
