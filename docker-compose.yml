@@ -12,6 +12,8 @@ services:
       SPRING_DATASOURCE_USERNAME: psmis
       SPRING_DATASOURCE_PASSWORD: psmisDb@2025
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+
       GATEWAY_URL: "http://user-management-api:6060"
       GATEWAY_AUTH_LOGIN: "http://user-management-api:6060/api/auth/login"
       GATEWAY_AUTH_VERIFY: "http://user-management-api:6060/api/auth/verify"

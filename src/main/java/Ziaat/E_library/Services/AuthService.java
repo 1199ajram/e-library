@@ -50,6 +50,7 @@ public class AuthService {
                     .onStatus(
                             status -> status.is4xxClientError(),
                             clientResponse -> {
+                                logger.error("Client url : {}", loginUrl);
                                 logger.error("Client error during login: {}", clientResponse.statusCode());
                                 return Mono.error(new ResponseStatusException(
                                         HttpStatus.UNAUTHORIZED, "Invalid username or password"
