@@ -15,7 +15,8 @@ services:
 
 
       GATEWAY_URL: "http://user-management-api:6060"
-      GATEWAY_AUTH_LOGIN: "http://user-management-api:6060/api/auth/login"
+#      GATEWAY_AUTH_LOGIN: "http://user-management-api:6060/api/auth/login"
+      GATEWAY_AUTH_LOGIN: "https://testgateway.ziaatsmz.go.tz/usermanagement-service/api/login"
       GATEWAY_AUTH_VERIFY: "http://user-management-api:6060/api/auth/verify"
     networks:
       - ziaat_default
