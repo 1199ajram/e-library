@@ -1,4 +1,5 @@
 version: "3.7"
+
 services:
   library:
     image: library-api:latest
@@ -22,15 +23,11 @@ services:
       MINIO_SECRET_KEY: "Zi@@t@2025"
       MINIO_BUCKET_COVER: "books-cover"
       MINIO_BUCKET_ATTACHMENT: "books-attachment"
-
     networks:
       - ziaat_default
-      - bridge  # Add MinIO's network here
 
 networks:
   ziaat_default:
-    external: true
-  bridge:
     external: true
 
 ###
