@@ -7,20 +7,19 @@ services:
     restart: always
     ports:
       - 6565:6565
-    extra_hosts:
-      - "minio.external:102.214.44.250"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://psmis-db:5440/library_db
       SPRING_DATASOURCE_USERNAME: psmis
       SPRING_DATASOURCE_PASSWORD: psmisDb@2025
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
-
       GATEWAY_URL: "http://user-management:6060"
       GATEWAY_AUTH_LOGIN: "http://user-management:6060/api/login"
       GATEWAY_AUTH_VERIFY: "http://user-management:6060/api/auth/verify"
 
-      MINIO_URL: "http://minio.external:9005"
+      # Temporarily disable MinIO
+      MINIO_ENABLED: "false"
+      MINIO_URL: "http://102.214.44.250:9005"
       MINIO_ACCESS_KEY: "admin"
       MINIO_SECRET_KEY: "Zi@@t@2025"
       MINIO_BUCKET_COVER: "books-cover"
