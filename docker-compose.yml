@@ -14,11 +14,15 @@ services:
       SPRING_JPA_HIBERNATE_DDL_AUTO: update
 
 
-      GATEWAY_URL: "http://user-management-api:6060"
-      #GATEWAY_AUTH_LOGIN: "http://user-management-api:6060/api/auth/login"
-      #GATEWAY_AUTH_LOGIN: "https://testgateway.ziaatsmz.go.tz/usermanagement-service/api/login"
+      GATEWAY_URL: "http://user-management:6060"
       GATEWAY_AUTH_LOGIN: "http://user-management:6060/api/login"
-      GATEWAY_AUTH_VERIFY: "http://user-management-api:6060/api/auth/verify"
+      GATEWAY_AUTH_VERIFY: "http://user-management:6060/api/auth/verify"
+
+      MINIO_URL: "http://102.214.44.250:9005"
+      MINIO_ACCESSKEY: "admin"
+      MINIO_SECRETKEY: "Zi@@t@2025"
+      MINIO_BUCKET_COVER: "books-cover"
+      MINIO_BUCKET_ATTACHMENT: "books-attachment"
     networks:
       - ziaat_default
 

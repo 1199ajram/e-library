@@ -22,6 +22,8 @@ public class Program {
     @Column(name = "program_id", updatable = false, nullable = false)
     private UUID programId;
 
+
+
     @Column(name = "program_name", unique = true, nullable = false)
     private String programName;
 
