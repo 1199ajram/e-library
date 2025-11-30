@@ -18,7 +18,7 @@ services:
       GATEWAY_AUTH_LOGIN: "http://user-management:6060/api/login"
       GATEWAY_AUTH_VERIFY: "http://user-management:6060/api/auth/verify"
 
-      MINIO_URL: "http://minio2:9000"
+      MINIO_URL: "http://minio2:9005"
       MINIO_ACCESS_KEY: "admin"
       MINIO_SECRET_KEY: "Zi@@t@2025"
       MINIO_BUCKET_COVER: "books-cover"
