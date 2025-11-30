@@ -17,18 +17,20 @@ services:
       GATEWAY_AUTH_LOGIN: "http://user-management:6060/api/login"
       GATEWAY_AUTH_VERIFY: "http://user-management:6060/api/auth/verify"
 
-      # Temporarily disable MinIO
-      MINIO_ENABLED: "false"
-      MINIO_URL: "http://102.214.44.250:9005"
+      MINIO_URL: "http://minio2:9000"
       MINIO_ACCESS_KEY: "admin"
       MINIO_SECRET_KEY: "Zi@@t@2025"
       MINIO_BUCKET_COVER: "books-cover"
       MINIO_BUCKET_ATTACHMENT: "books-attachment"
+
     networks:
       - ziaat_default
+      - bridge  # Add MinIO's network here
 
 networks:
   ziaat_default:
+    external: true
+  bridge:
     external: true
 
 ###
