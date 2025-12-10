@@ -15,7 +15,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/fines")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 @Tag(name = "Fines Management", description = "APIs for managing library fines")
 public class FineController {
 

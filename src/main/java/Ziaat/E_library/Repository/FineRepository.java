@@ -3,6 +3,7 @@ package Ziaat.E_library.Repository;
 import Ziaat.E_library.Model.Fine;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,4 +16,6 @@ public interface FineRepository extends JpaRepository<Fine, UUID> {
 
     @Query("SELECT SUM(f.amount) FROM Fine f WHERE f.member.memberId = :memberId AND f.status = 'UNPAID'")
     Double getTotalUnpaidFinesByMember(UUID memberId);
+
+
 }

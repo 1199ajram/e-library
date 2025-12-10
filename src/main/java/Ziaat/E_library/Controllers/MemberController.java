@@ -1,7 +1,9 @@
 package Ziaat.E_library.Controllers;
 
+import Ziaat.E_library.Dto.ActivityStatsDTO;
 import Ziaat.E_library.Dto.MemberRequest;
 import Ziaat.E_library.Dto.MemberResponse;
+import Ziaat.E_library.Services.ActivityStatsService;
 import Ziaat.E_library.Services.MemberService;
 import Ziaat.E_library.Utils.PageResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,6 +24,7 @@ import java.util.UUID;
 public class MemberController {
 
     private final MemberService memberService;
+    private final ActivityStatsService activityStatsService;
 
     @Operation(summary = "Create a new member")
     @PostMapping
@@ -93,4 +96,13 @@ public class MemberController {
         memberService.deleteMember(id);
         return ResponseEntity.noContent().build();
     }
+
+
+
+    @GetMapping("/activity-stats/{memberId}")
+    public ResponseEntity<ActivityStatsDTO> getActivityStatsByMemberId(@PathVariable UUID memberId) {
+        ActivityStatsDTO stats = activityStatsService.getActivityStats(memberId);
+        return ResponseEntity.ok(stats);
+    }
+
 }

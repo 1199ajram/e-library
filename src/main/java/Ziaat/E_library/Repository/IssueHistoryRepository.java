@@ -49,4 +49,26 @@ public interface IssueHistoryRepository extends JpaRepository<IssueHistory, UUID
     // Find by member and returned status
     List<IssueHistory> findByMemberMemberIdAndReturned(UUID memberId, Boolean returned);
 
+
+
+
+    // Count total books borrowed by member
+    @Query("SELECT COUNT(b) FROM IssueHistory b WHERE b.member.memberId = :memberId")
+    Integer countTotalBooksBorrowedByMember(@Param("memberId") UUID memberId);
+
+    // Count overdue books for member
+    @Query("SELECT COUNT(b) FROM IssueHistory b WHERE b.member.memberId = :memberId " +
+            "AND b.returnDate IS NULL AND b.dueDate < CURRENT_DATE")
+    Integer countOverdueBooksByMember(@Param("memberId") UUID memberId);
+
+    // Count on-time returns
+    @Query("SELECT COUNT(b) FROM IssueHistory b WHERE b.member.memberId = :memberId " +
+            "AND b.returnDate IS NOT NULL AND b.returnDate <= b.dueDate")
+    Integer countOnTimeReturnsByMember(@Param("memberId") UUID memberId);
+
+    // Count total returns
+    @Query("SELECT COUNT(b) FROM IssueHistory b WHERE b.member.memberId = :memberId " +
+            "AND b.returnDate IS NOT NULL")
+    Integer countTotalReturnsByMember(@Param("memberId") UUID memberId);
+
 }

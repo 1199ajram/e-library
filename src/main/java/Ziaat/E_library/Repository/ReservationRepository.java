@@ -51,4 +51,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
     // Get all with pagination (already available from JpaRepository)
     Page<Reservation> findAllByStatus(Reservation.ReservationStatus status, Pageable pageable);
 
+
+    @Query("SELECT COUNT(r) FROM Reservation r WHERE r.member.memberId = :memberId " +
+            "AND r.status = 'FULFILLED'")
+    Integer countActiveReservationsByMember(@Param("memberId") UUID memberId);
 }

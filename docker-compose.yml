@@ -1,35 +1,35 @@
-version: "3.7"
-services:
-  library:
-    image: library-api:latest
-    container_name: library-api
-    build: .
-    restart: always
-    ports:
-      - 6565:6565
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://psmis-db:5440/library_db
-      SPRING_DATASOURCE_USERNAME: psmis
-      SPRING_DATASOURCE_PASSWORD: psmisDb@2025
-      SPRING_JPA_HIBERNATE_DDL_AUTO: update
-
-
-      GATEWAY_URL: "http://user-management:6060"
-      GATEWAY_AUTH_LOGIN: "http://user-management:6060/api/login"
-      GATEWAY_AUTH_VERIFY: "http://user-management:6060/api/auth/verify"
-
-      MINIO_URL: "http://minio2:9000"
-      MINIO_ACCESS_KEY: "admin"
-      MINIO_SECRET_KEY: "Zi@@t@2025"
-      MINIO_BUCKET_COVER: "books-cover"
-      MINIO_BUCKET_ATTACHMENT: "books-attachment"
-
-    networks:
-      - ziaat_default
-
-networks:
-  ziaat_default:
-    external: true
+#version: "3.7"
+#services:
+#  library:
+#    image: library-api:latest
+#    container_name: library-api
+#    build: .
+#    restart: always
+#    ports:
+#      - 6565:6565
+#    environment:
+#      SPRING_DATASOURCE_URL: jdbc:postgresql://psmis-db:5440/library_db
+#      SPRING_DATASOURCE_USERNAME: psmis
+#      SPRING_DATASOURCE_PASSWORD: psmisDb@2025
+#      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+#
+#
+#      GATEWAY_URL: "http://user-management:6060"
+#      GATEWAY_AUTH_LOGIN: "http://user-management:6060/api/login"
+#      GATEWAY_AUTH_VERIFY: "http://user-management:6060/api/auth/verify"
+#
+#      MINIO_URL: "http://minio2:9000"
+#      MINIO_ACCESS_KEY: "admin"
+#      MINIO_SECRET_KEY: "Zi@@t@2025"
+#      MINIO_BUCKET_COVER: "books-cover"
+#      MINIO_BUCKET_ATTACHMENT: "books-attachment"
+#
+#    networks:
+#      - ziaat_default
+#
+#networks:
+#  ziaat_default:
+#    external: true
 
 ###
 #version: "3.7"
@@ -55,3 +55,36 @@ networks:
 #      name: ziaat_default
 #
 #
+
+version: "3.7"
+services:
+  library:
+    image: library-api:latest
+    container_name: library-api
+    build: .
+    restart: always
+    ports:
+      - 6565:6565
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://psmis-db:5440/library_db
+      SPRING_DATASOURCE_USERNAME: ziaat@psmis
+      SPRING_DATASOURCE_PASSWORD: psmis-ziaatDb@2025
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+
+
+      GATEWAY_URL: "http://user-management:6060"
+      GATEWAY_AUTH_LOGIN: "http://user-management:6060/api/login"
+      GATEWAY_AUTH_VERIFY: "http://user-management:6060/api/auth/verify"
+
+      MINIO_URL: "http://minio2:9000"
+      MINIO_ACCESS_KEY: "admin"
+      MINIO_SECRET_KEY: "Zi@@t@2025"
+      MINIO_BUCKET_COVER: "books-cover"
+      MINIO_BUCKET_ATTACHMENT: "books-attachment"
+
+    networks:
+      - ziaat_default
+
+networks:
+  ziaat_default:
+    external: true
