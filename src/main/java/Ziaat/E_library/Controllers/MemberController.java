@@ -68,6 +68,13 @@ public class MemberController {
         return ResponseEntity.ok(memberService.getMemberById(id));
     }
 
+    @Operation(summary = "Toggle member librarian status")
+    @PutMapping("/islibrarian/{id}")
+    public ResponseEntity<MemberResponse> toggleLibrarianStatus(@PathVariable UUID id) {
+        return ResponseEntity.ok(memberService.toggleLibrarianStatus(id));
+    }
+
+
     @Operation(summary = "Update member")
     @PutMapping("/{id}")
     public ResponseEntity<MemberResponse> updateMember(

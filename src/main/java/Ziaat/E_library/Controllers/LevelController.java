@@ -130,4 +130,8 @@ public class LevelController {
     public ResponseEntity<List<Level>> getActive() {
         return ResponseEntity.ok(levelService.getActive());
     }
+    @GetMapping("/active/public")
+    public ResponseEntity<List<Level>> getActivePublic() {
+        return ResponseEntity.ok(levelService.getActivePublic());
+    }
 }

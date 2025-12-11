@@ -19,6 +19,9 @@ public interface LevelRepository extends JpaRepository<Level, UUID> {
             "LOWER(a.levelCode) LIKE LOWER(CONCAT('%', :searchTerm, '%'))")
     Page<Level> searchLevel(@Param("searchTerm") String searchTerm, Pageable pageable);
 
+    @Query(value = "SELECT * FROM levels WHERE is_active = true LIMIT 5", nativeQuery = true)
+    List<Level> getActiveLimit();
+
 
     List<Level> findByProgram_ProgramIdAndIsActiveTrue(UUID programId);
 

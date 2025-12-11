@@ -38,6 +38,7 @@ public class MemberService {
         member.setMembershipType(Member.MembershipType.valueOf(request.getMembershipType()));
         member.setMaxBooksAllowed(request.getMaxBooksAllowed() != null ? request.getMaxBooksAllowed() : 5);
         member.setStatus(Member.MemberStatus.ACTIVE);
+        member.setIsLibrarian(false);
 
         return mapToResponse(memberRepository.save(member));
     }
@@ -91,7 +92,7 @@ public class MemberService {
     public MemberResponse updateMember(UUID memberId, MemberRequest request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
-
+        member.setMembershipType(Member.MembershipType.valueOf(request.getMembershipType()));
         member.setFirstname(request.getFirstname());
         member.setLastname(request.getLastname());
         member.setEmail(request.getEmail());
@@ -102,6 +103,34 @@ public class MemberService {
 
         return mapToResponse(memberRepository.save(member));
     }
+
+//    public MemberResponse toggleLibrarianStatus(UUID memberId) {
+//        Member member = memberRepository.findById(memberId)
+//                .orElseThrow(() -> new RuntimeException("Member not found"));
+//        // Toggle: if true → false, if false → true
+//        member.setIsLibrarian(!member.getIsLibrarian());
+//
+//        Member savedMember = memberRepository.save(member);
+//        return mapToResponse(savedMember);
+//    }
+
+    public MemberResponse toggleLibrarianStatus(UUID memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new RuntimeException("Member not found"));
+
+        // Safely treat NULL as false
+        boolean currentValue = Boolean.TRUE.equals(member.getIsLibrarian());
+
+        // Toggle
+        member.setIsLibrarian(!currentValue);
+
+        Member saved = memberRepository.save(member);
+        return mapToResponse(saved);
+    }
+
+
+
+
 
     public void suspendMember(UUID memberId) {
         Member member = memberRepository.findById(memberId)
@@ -142,7 +171,7 @@ public class MemberService {
         response.setMaxBooksAllowed(member.getMaxBooksAllowed());
         response.setFineBalance(member.getFineBalance());
         response.setCreatedAt(member.getCreatedAt());
-
+        response.setIsLibrarian(member.getIsLibrarian());
         // Get current borrowed books count
         List<IssueHistory> activeIssues = issueHistoryRepository
                 .findByMember_MemberIdAndReturnedFalse(member.getMemberId());

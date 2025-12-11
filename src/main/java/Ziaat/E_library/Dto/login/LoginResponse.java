@@ -35,6 +35,7 @@ public class LoginResponse {
         private Integer expiresIn;
 
         private UUID memberId;
+        private Boolean isLibrarian;
 
     }
 }

@@ -81,6 +81,10 @@ public class LevelService {
     }
 
 
+    public List<Level> getActivePublic() {
+        return levelRepository.getActiveLimit();
+    }
+
 
     public List<LevelResponseDto> getActiveLevelsByProgram(UUID programId) {
         return levelRepository.findByProgram_ProgramIdAndIsActiveTrue(programId)

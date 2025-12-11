@@ -90,6 +90,7 @@ public class AuthService {
                 member.setFirstname(response.getBody().getFirstName());
                 member.setLastname(response.getBody().getLastName());
                 member.setEmail(response.getBody().getUsername());
+                member.setIsLibrarian(false);
                 member.setPhone(null);
                 member.setAddress(null);
                 member.setMembershipStartDate(LocalDate.now());
@@ -123,6 +124,7 @@ public class AuthService {
             }
 
             response.getBody().setMemberId(member.getMemberId());
+            response.getBody().setIsLibrarian(member.getIsLibrarian());
 
             // Step 5: Return the login response (successful)
             return response;

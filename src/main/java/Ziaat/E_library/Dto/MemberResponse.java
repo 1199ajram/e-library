@@ -27,4 +27,5 @@ public class MemberResponse {
     private Double fineBalance;
     private Integer currentBorrowedBooks;
     private LocalDateTime createdAt;
+    private Boolean isLibrarian;
 }

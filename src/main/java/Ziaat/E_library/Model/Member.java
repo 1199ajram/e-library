@@ -48,6 +48,9 @@ public class Member {
 
     private LocalDate membershipEndDate;
 
+    @Column(nullable = true)
+    private Boolean isLibrarian = false;
+
     @Enumerated(EnumType.STRING)
     private MembershipType membershipType = MembershipType.REGULAR;
 
