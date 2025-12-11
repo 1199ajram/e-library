@@ -17,5 +17,14 @@ public interface FineRepository extends JpaRepository<Fine, UUID> {
     @Query("SELECT SUM(f.amount) FROM Fine f WHERE f.member.memberId = :memberId AND f.status = 'UNPAID'")
     Double getTotalUnpaidFinesByMember(UUID memberId);
 
+    List<Fine> findByMember_MemberId(UUID memberId);
+
+    List<Fine> findByMember_MemberIdAndStatus(UUID memberId, Fine.FineStatus status);
+
+    @Query("SELECT f FROM Fine f LEFT JOIN FETCH f.issue i LEFT JOIN FETCH i.book WHERE f.member.memberId = :memberId")
+    List<Fine> findByMemberIdWithBookDetails(@Param("memberId") UUID memberId);
+
+    @Query("SELECT SUM(f.amount) FROM Fine f WHERE f.member.memberId = :memberId AND f.status = :status")
+    Double sumAmountByMemberIdAndStatus(@Param("memberId") UUID memberId, @Param("status") Fine.FineStatus status);
 
 }

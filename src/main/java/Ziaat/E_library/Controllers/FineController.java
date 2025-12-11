@@ -1,6 +1,8 @@
 package Ziaat.E_library.Controllers;
 
 import Ziaat.E_library.Dto.FineRequest;
+import Ziaat.E_library.Dto.fine.FineDTO;
+import Ziaat.E_library.Dto.fine.FineSummaryDTO;
 import Ziaat.E_library.Model.Fine;
 import Ziaat.E_library.Services.FineService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,11 +35,11 @@ public class FineController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Get fines by member")
-    @GetMapping("/member/{memberId}")
-    public ResponseEntity<List<Fine>> getFinesByMember(@PathVariable UUID memberId) {
-        return ResponseEntity.ok(fineService.getFinesByMember(memberId));
-    }
+//    @Operation(summary = "Get fines by member")
+//    @GetMapping("/member/{memberId}")
+//    public ResponseEntity<List<Fine>> getFinesByMember(@PathVariable UUID memberId) {
+//        return ResponseEntity.ok(fineService.getFinesByMember(memberId));
+//    }
 
     @Operation(summary = "Pay a fine")
     @PostMapping("/{id}/pay")
@@ -54,4 +56,24 @@ public class FineController {
             @RequestParam String notes) {
         return ResponseEntity.ok(fineService.waiveFine(id, notes));
     }
+
+
+
+
+
+
+    @GetMapping("/member/{memberId}")
+    public ResponseEntity<List<FineDTO>> getMemberFines(@PathVariable UUID memberId) {
+        List<FineDTO> fines = fineService.getFinesByMemberId(memberId);
+        return ResponseEntity.ok(fines);
+    }
+
+    @GetMapping("/member/{memberId}/summary")
+    public ResponseEntity<FineSummaryDTO> getMemberFineSummary(@PathVariable UUID memberId) {
+        FineSummaryDTO summary = fineService.getFineSummary(memberId);
+        return ResponseEntity.ok(summary);
+    }
+
+
+
 }

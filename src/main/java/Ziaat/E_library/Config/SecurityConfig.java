@@ -34,6 +34,7 @@ public class SecurityConfig {
                                 "/api/member-login",
                                 "/api/books/public/**",
                                 "/api/books/get-content",
+                                "/api/levels/active",
                                 "/api/public/**",
                                 "/api/refresh-token",
                                 "/actuator/**",

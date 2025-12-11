@@ -1,6 +1,8 @@
 package Ziaat.E_library.Services;
 
 import Ziaat.E_library.Dto.FineRequest;
+import Ziaat.E_library.Dto.fine.FineDTO;
+import Ziaat.E_library.Dto.fine.FineSummaryDTO;
 import Ziaat.E_library.Model.Fine;
 import Ziaat.E_library.Model.IssueHistory;
 import Ziaat.E_library.Model.Member;
@@ -15,6 +17,7 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -126,5 +129,71 @@ public class FineService {
         Double totalUnpaid = fineRepository.getTotalUnpaidFinesByMember(member.getMemberId());
         member.setFineBalance(totalUnpaid != null ? totalUnpaid : 0.0);
         memberRepository.save(member);
+    }
+
+
+    public List<FineDTO> getFinesByMemberId(UUID memberId) {
+        List<Fine> fines = fineRepository.findByMember_MemberId(memberId);
+        return fines.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    public FineSummaryDTO getFineSummary(UUID memberId) {
+        List<Fine> fines = fineRepository.findByMember_MemberId(memberId);
+
+        double totalUnpaid = fines.stream()
+                .filter(f -> f.getStatus() == Fine.FineStatus.UNPAID)
+                .mapToDouble(Fine::getAmount)
+                .sum();
+
+        double totalPaid = fines.stream()
+                .filter(f -> f.getStatus() == Fine.FineStatus.PAID)
+                .mapToDouble(Fine::getAmount)
+                .sum();
+
+        double totalWaived = fines.stream()
+                .filter(f -> f.getStatus() == Fine.FineStatus.WAIVED)
+                .mapToDouble(Fine::getAmount)
+                .sum();
+
+        double totalFines = fines.stream()
+                .mapToDouble(Fine::getAmount)
+                .sum();
+
+        int unpaidCount = (int) fines.stream()
+                .filter(f -> f.getStatus() == Fine.FineStatus.UNPAID)
+                .count();
+
+        int paidCount = (int) fines.stream()
+                .filter(f -> f.getStatus() == Fine.FineStatus.PAID)
+                .count();
+
+        int waivedCount = (int) fines.stream()
+                .filter(f -> f.getStatus() == Fine.FineStatus.WAIVED)
+                .count();
+
+        return new FineSummaryDTO(totalUnpaid, totalPaid, totalWaived,
+                totalFines, unpaidCount, paidCount, waivedCount);
+    }
+
+    private FineDTO convertToDTO(Fine fine) {
+        FineDTO dto = new FineDTO();
+        dto.setFineId(fine.getFineId());
+        dto.setMemberId(fine.getMember().getMemberId());
+        dto.setAmount(fine.getAmount());
+        dto.setReason(fine.getReason());
+        dto.setStatus(fine.getStatus().name());
+        dto.setCreatedAt(fine.getCreatedAt());
+        dto.setPaidAt(fine.getPaidAt());
+        dto.setPaymentMethod(fine.getPaymentMethod());
+        dto.setNotes(fine.getNotes());
+
+        // Get book title from issue if available
+        if (fine.getIssue() != null && fine.getIssue().getBook() != null) {
+            dto.setBookTitle(fine.getIssue().getBook().getTitle());
+        }
+
+        return dto;
     }
 }
