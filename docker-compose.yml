@@ -82,6 +82,9 @@ services:
       MINIO_BUCKET_COVER: "books-cover"
       MINIO_BUCKET_ATTACHMENT: "books-attachment"
 
+      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 50MB
+      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 50MB
+
     networks:
       - ziaat_default
 
