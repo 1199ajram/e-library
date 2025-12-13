@@ -82,9 +82,31 @@ services:
       MINIO_BUCKET_COVER: "books-cover"
       MINIO_BUCKET_ATTACHMENT: "books-attachment"
 
-      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 50MB
-      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 50MB
+      # File Upload Limits - INCREASED TO 150MB
+      SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE: 150MB
+      SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE: 150MB
+      SPRING_SERVLET_MULTIPART_ENABLED: true
 
+      # Tomcat Configuration
+      SERVER_TOMCAT_MAX_SWALLOW_SIZE: -1
+      SERVER_TOMCAT_MAX_HTTP_FORM_POST_SIZE: -1
+
+      # Timeout Configuration (5 minutes)
+      SPRING_MVC_ASYNC_REQUEST_TIMEOUT: 300000
+
+      # Connection Pool (optional, but recommended)
+      SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 10
+      SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 5
+
+    # Resource Limits - IMPORTANT FOR LARGE FILES
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '2.0'
+        reservations:
+          memory: 1G
+          cpus: '1.0'
     networks:
       - ziaat_default
 
