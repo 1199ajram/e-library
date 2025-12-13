@@ -92,6 +92,13 @@ services:
 
       SPRING_MVC_ASYNC_REQUEST_TIMEOUT: "300000"
 
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G
+
     networks:
       - ziaat_default
 
